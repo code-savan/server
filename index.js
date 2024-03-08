@@ -14,7 +14,7 @@ const commentRoute = require('./routes/comments');
 // Database connection
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+        await mongoose.connect(process.env.MONGO_URL);
         console.log("Database connected successfully!");
     } catch (err) {
         console.log(err);
