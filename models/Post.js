@@ -16,7 +16,7 @@ const PostSchema=new mongoose.Schema({
         required:false,
         
     },
-    username:{
+    author:{
         type:String,
         required:true,  
     },
