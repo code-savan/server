@@ -12,7 +12,7 @@ router.get("/refetch", async (req, res) => {
         const token = req.cookies.token;
         // console.log(token)
         const data = jwt.verify(token, process.env.SECRET);
-        res.status(200).json(data);
+        res.status(200).json(data); 
     } catch (err) {
         res.status(401).json({ error: 'Authentication failed lalala' }); 
     }
