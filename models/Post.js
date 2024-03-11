@@ -14,7 +14,6 @@ const PostSchema=new mongoose.Schema({
     photo:{
         type:String,
         required:false,
-        
     },
     author:{
         type:String,
@@ -26,7 +25,6 @@ const PostSchema=new mongoose.Schema({
     },
     categories:{
         type:Array,
-        
     },
 },{timestamps:true})
 

@@ -3,7 +3,6 @@ const app = express();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const multer = require('multer');
 const path = require("path");
 const cookieParser = require('cookie-parser');
 const authRoute = require('./routes/auth');
@@ -28,10 +27,18 @@ app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
 // CORS setup
-app.use(cors({
-    origin: ['http://localhost:5173', 'https://blog-app07.netlify.app'],
-    credentials: true
-}));
+app.use((req, res, next) => {
+    const allowedOrigins = ['http://localhost:5173', 'https://drlawsonakpulonu.com', 'https://drlawsonakpulonu.netlify.app'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', true);
+    next();
+});
+
 
 // Cookie parser middleware
 app.use(cookieParser());
@@ -45,21 +52,6 @@ app.use("/api/comments", commentRoute);
 app.get('/', (req, res) => {
     res.send({message: 'Welcome to the API'})}
 )
-
-// Image upload setup
-const storage = multer.diskStorage({
-    destination: (req, file, fn) => {
-        fn(null, "images");
-    },
-    filename: (req, file, fn) => {
-        fn(null, req.body.img);
-    }
-});
-
-const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-    res.status(200).json("Image has been uploaded successfully!");
-});
 
 
 // Start the server
