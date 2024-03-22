@@ -8,20 +8,33 @@ const verifyToken = require('../verifyToken')
 
 
 //UPDATE
-router.put("/:id",verifyToken,async (req,res)=>{
-    try{
-        if(req.body.password){
-            const salt=await bcrypt.genSalt(10)
-            req.body.password=await bcrypt.hashSync(req.body.password,salt)
-        }
-        const updatedUser=await User.findByIdAndUpdate(req.params.id,{$set:req.body},{new:true})
-        res.status(200).json(updatedUser)
+router.put("/:id", verifyToken, async (req, res) => {
+  try {
+    let updateFields = {};
+    if (req.body.newPassword && req.body.currentPassword) {
+      const user = await User.findById(req.params.id);
+      const isPasswordValid = await bcrypt.compare(req.body.currentPassword, user.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect." });
+      }
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.newPassword, salt);
+      updateFields.password = hashedPassword;
+    }
+    if (req.body.username) {
+      updateFields.username = req.body.username;
+    }
+    if (req.body.email) {
+      updateFields.email = req.body.email;
+    }
 
-    }
-    catch(err){
-        res.status(500).json(err)
-    }
-})
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: updateFields }, { new: true });
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 
 
 //DELETE
